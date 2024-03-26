@@ -79,42 +79,43 @@ public class TicketService extends DAO<Ticket> {
 		Connection connection = null;
 		try {
 			connection = DataBaseConnection.getInstance();
-			String queryMax = "SELECT MAX(ANNEE),MAX(NUMERO_TICKET) FROM TICKET";
+			String queryMax = "SELECT MAX(ANNEE) FROM TICKET";
 			PreparedStatement statementMax = connection.prepareStatement(queryMax);
 			ResultSet res = statementMax.executeQuery();
 			if (res.next()) {
-			if (ticket.getAnnee()>res.getInt(1)) {
-			String query = "INSERT INTO TICKET(ANNEE,NUMERO_TICKET,DATE_VENTE,HEURE_VENTE) VALUES (?,?,?,?)";
-			PreparedStatement statement = connection.prepareStatement(query);
-			statement.setInt(1, ticket.getAnnee());
-			statement.setInt(2, 1);
-			statement.setString(3, ticket.getDate_vente());
-			statement.setString(4, ticket.getHeure_vente());
+				if (ticket.getAnnee() > res.getInt(1)) {
+					String query = "INSERT INTO TICKET(ANNEE,NUMERO_TICKET,DATE_VENTE,HEURE_VENTE) VALUES (?,?,?,?)";
+					PreparedStatement statement = connection.prepareStatement(query);
+					statement.setInt(1, ticket.getAnnee());
+					statement.setInt(2, 1);
+					statement.setString(3, ticket.getDate_vente());
+					statement.setString(4, ticket.getHeure_vente());
 
-			int rowsAdded = statement.executeUpdate();
-			if (rowsAdded > 0) {
-				System.out.println("Ticket cree");
-			}}
-			else if (ticket.getAnnee()==res.getInt(1)) {
-				String queryTicketMax = "SELECT MAX(NUMERO_TICKET) FROM TICKET WHERE ANNEE="+res.getInt(1);
-				PreparedStatement statementTicketMax = connection.prepareStatement(queryTicketMax);
-				ResultSet ResTicketMax=statementTicketMax.executeQuery();
-				if(ResTicketMax.next()) {
-				String query = "INSERT INTO TICKET(ANNEE,NUMERO_TICKET,DATE_VENTE,HEURE_VENTE) VALUES (?,?,?,?)";
-				PreparedStatement statement = connection.prepareStatement(query);
-				
-				
-				statement.setInt(1, ticket.getAnnee());
-				statement.setInt(2, ResTicketMax.getInt(1)+1);
-				statement.setString(3, ticket.getDate_vente());
-				statement.setString(4, ticket.getHeure_vente());
+					int rowsAdded = statement.executeUpdate();
+					if (rowsAdded > 0) {
+						System.out.println("Ticket cree");
+					}
+				} else if (ticket.getAnnee() == res.getInt(1)) {
+					String queryTicketMax = "SELECT MAX(NUMERO_TICKET) FROM TICKET WHERE ANNEE=" + res.getInt(1);
+					PreparedStatement statementTicketMax = connection.prepareStatement(queryTicketMax);
+					ResultSet ResTicketMax = statementTicketMax.executeQuery();
+					if (ResTicketMax.next()) {
+						String query = "INSERT INTO TICKET(ANNEE,NUMERO_TICKET,DATE_VENTE,HEURE_VENTE) VALUES (?,?,?,?)";
+						PreparedStatement statement = connection.prepareStatement(query);
 
-				int rowsAdded = statement.executeUpdate();
-				if (rowsAdded > 0) {
-					System.out.println("Ticket cree");
-				}}
+						statement.setInt(1, ticket.getAnnee());
+						statement.setInt(2, ResTicketMax.getInt(1) + 1);
+						statement.setString(3, ticket.getDate_vente());
+						statement.setString(4, ticket.getHeure_vente());
+
+						int rowsAdded = statement.executeUpdate();
+						if (rowsAdded > 0) {
+							System.out.println("Ticket cree");
+						}
+					}
+				}
 			}
-		}} catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			if (connection != null) {
@@ -154,10 +155,13 @@ public class TicketService extends DAO<Ticket> {
 	}
 
 	public void displayTicket(Ticket ticket) {
-		if (ticket!=null) {
-		System.out.println("{" + ticket.getAnnee() + " / " + ticket.getNumero_ticket() + " / " + ticket.getDate_vente()
-				+ " / " + ticket.getHeure_vente() + "}");}
-		else {System.out.println("aucun ticket correspondant");}
+		if (ticket != null) {
+			System.out.println(
+					"{" + ticket.getAnnee() + " / " + ticket.getNumero_ticket() + " / " + ticket.getDate_vente()
+							+ " / " + ticket.getHeure_vente() + "}");
+		} else {
+			System.out.println("aucun ticket correspondant");
+		}
 	}
 
 	public void displayResult(List<Ticket> ArrayTicket) {
@@ -165,30 +169,6 @@ public class TicketService extends DAO<Ticket> {
 			displayTicket(ticket);
 		}
 	}
-	
-	public void save2 (Ticket ticket) throws ClassNotFoundException {
-		Connection connection = null;
-		try {
-			connection = DataBaseConnection.getInstance();
-			String queryMax = "SELECT MAX(ANNEE),MAX(NUMERO_TICKET) FROM TICKET";
-			PreparedStatement statementMax = connection.prepareStatement(queryMax);
-			ResultSet res = statementMax.executeQuery();
-			if (res.next()) {
-			System.out.println(ticket.getAnnee());
-			System.out.println(res.getInt(1));}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-	
 
 	@Override
 	public Ticket find(long id) throws ClassNotFoundException {
